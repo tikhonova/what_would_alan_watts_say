@@ -67,3 +67,30 @@ for file_format in file_formats:
             if file.lower().endswith(f'{file_format}'):
                 shutil.copy(os.path.join(root, file),
                             os.path.join(dest_root + file_format, file + f'_{now}' + f'.{file_format}'))
+
+"""
+4) Evaluate quantity and size of the material
+"""
+
+mydict = {}
+for file_format in file_formats:
+    counter = 0
+    for root, dirs, files in os.walk(dest_root):
+        for file in files:
+            if file.lower().endswith(f'{file_format}'):
+                counter += 1
+                mydict[file_format] = counter
+print(mydict)
+# {'mp4': 18, 'jpg': 1, 'txt': 1, 'pdf': 7, 'avi': 4, 'mp3': 599, 'mobi': 11}
+
+mydict = {}
+for file_format in file_formats:
+    size = 0
+    for root, dirs, files in os.walk(dest_root):
+        for file in files:
+            if file.lower().endswith(f'{file_format}'):
+                fp = os.path.join(root, file)
+                size += os.path.getsize(fp)
+                mydict[file_format] = round(size / 1000000, 2)  # converting bytes to MB
+print(mydict)
+# {'mp4': 2558.19, 'jpg': 0.05, 'txt': 0.0, 'pdf': 30.52, 'avi': 555.06, 'mp3': 8115.6, 'mobi': 6.22}
