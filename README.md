@@ -22,6 +22,10 @@ Alan Watts lectures posted on Youtube and Spotify. Essays and books found on the
 4. Create a RNN (?)
 5. Evaluate
 
+#### Libraries
+- [Autosub](https://github.com/abhirooptalasila/AutoSub) and Mozilla's DeepSpeech for generating transcripts
+
+
 ### Phase II - Voice Synthesis - Steps
 1. Download training data for both voice and text
 2. Set up daaset structure
@@ -38,7 +42,6 @@ Alan Watts lectures posted on Youtube and Spotify. Essays and books found on the
 8. Evaluate
 
 #### Libraries
-- [Autosub](https://github.com/abhirooptalasila/AutoSub) and Mozilla's DeepSpeech for generating transcripts
 - [Tacotron2 and Waveglow 2.0 for voice synthesis](https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/SpeechSynthesis/Tacotron2)
 
 #### Materials
