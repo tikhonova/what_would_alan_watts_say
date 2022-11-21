@@ -10,12 +10,19 @@ Alan Watts lectures posted on Youtube and Spotify. Essays and books found on the
 - 
 
 ### Phases:
-- I Voice synthesis
-- II Text generation
+- I Text generation
+- II Voice synthesis
 - III YouTube / Spotify
 - IV Bot
 
-### Phase I - Voice Synthesis - Steps
+### Phase I - Text Generation - Steps
+1. Download training data for both voice and text
+2. Transcribe existing audio / video files
+3. Trim and combine
+4. Create a RNN (?)
+5. Evaluate
+
+### Phase II - Voice Synthesis - Steps
 1. Download training data for both voice and text
 2. Set up daaset structure
     - original recordings
@@ -31,7 +38,8 @@ Alan Watts lectures posted on Youtube and Spotify. Essays and books found on the
 8. Evaluate
 
 #### Libraries
-- [Tacotron2 and Waveglow 2.0 for PyTorch](https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/SpeechSynthesis/Tacotron2)
+- [Autosub](https://github.com/abhirooptalasila/AutoSub) and Mozilla's DeepSpeech for generating transcripts
+- [Tacotron2 and Waveglow 2.0 for voice synthesis](https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/SpeechSynthesis/Tacotron2)
 
 #### Materials
 - https://jaimeleal.github.io/how-to-speech-synthesis
