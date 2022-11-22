@@ -23,5 +23,5 @@ for root, dirs, files in os.walk(filepath):
         f.write(content)
         f.close()
         break
-
+        
 # https://stackoverflow.com/questions/25665/python-module-for-converting-pdf-to-text
