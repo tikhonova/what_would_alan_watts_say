@@ -1,5 +1,4 @@
 '''
-Convert PDF to text
 Convert mobi to text
 '''
 
@@ -28,4 +27,21 @@ for i in tqdm(range(100)):
             f = open(dest_path + f'{file}' + '.txt', "w", encoding="utf-8")
             f.write(content)
             f.close()
-# https://stackoverflow.com/questions/25665/python-module-for-converting-pdf-to-text
+
+'''
+Convert PDF to text
+https://stackoverflow.com/questions/25665/python-module-for-converting-pdf-to-text
+'''
+
+from pdfminer.high_level import extract_text
+
+filepath = "E:/AlanWattsMaterialSorted/pdf/"
+dest_path = "E:/AlanWattsMaterialSorted/txt/"
+
+for i in tqdm(range(100)):
+    for root, dirs, files in os.walk(filepath):
+        for file in files:
+            text = extract_text(f"{filepath}{file}")
+            f = open(dest_path + f'{file}' + '.txt', "w", encoding="utf-8")
+            f.write(text)
+            f.close()
