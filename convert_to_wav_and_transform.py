@@ -1,33 +1,33 @@
 '''
 Convert mp4, mp3, avi to wav
-
-How to start redis server on Win 10:
-1.Run in WSL: sudo service redis-server start
-2.Run Celery in terminal: celery -A convert_to_wav_and_transform.celery worker --loglevel=debug -P eventlet --concurrency=100
-3.Run flower UI via localhost: celery -A convert_to_wav_and_transform.celery flower --port=5555
-
 '''
 
+import multiprocessing
 import os
+from multiprocessing import freeze_support
 
-from celery import Celery
 from pydub import AudioSegment
-
-celery = Celery('convert_audio',
-                broker='redis://localhost:6379/0')  # app object initialized with Celery constructor and config params i.e. broker URL
 
 filepath = "E:/AlanWattsMaterialSorted/mp3/"
 dest_path = "E:/AlanWattsMaterialSorted/audio/"
 
 
-# define Celery task for converting audio files to WAV format
-@celery.task
-def convert_audio_to_wav(filename, filepath, dest_path):
-    given_audio = AudioSegment.from_file(f"{filepath}" + f"{filename}", format="mp3")  # replace with mp4 or avi
-    given_audio.export(f"{dest_path}" + f"{filename[:-4]}.wav", format="wav")
+def convert_audio_to_wav(filename: str, filepath: str, dest_path: str) -> None:
+    filepath = os.path.join(filepath, filename)
+    dest_filepath = os.path.join(dest_path, f"{filename[:-4]}.wav")
+    given_audio = AudioSegment.from_file(filepath, format="mp3")  # replace with mp4 or avi
+    given_audio.export(dest_filepath, format="wav")
 
 
-for filename in os.listdir(filepath):
-    if filename not in os.listdir(dest_path):
-        convert_audio_to_wav.delay(filename, filepath,
-                                   dest_path)  # .delay adds task to Celery queue allowing multiple audio files to be converted concurrently
+# create a list of input arguments for the function
+inputs = [(filename, filepath, dest_path) for filename in os.listdir(filepath) if filename not in os.listdir(dest_path)]
+
+# create a Process pool with 16 worker processes
+
+if __name__ == '__main__':
+    freeze_support()
+    p = multiprocessing.Pool(16)
+    p.starmap(convert_audio_to_wav, inputs)
+
+'''With this implementation, the worker processes will execute the convert_audio_to_wav function 
+with each set of arguments in the inputs list, and each worker process will convert one audio file at a time.'''
