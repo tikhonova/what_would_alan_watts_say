@@ -3,6 +3,7 @@ import os
 import subprocess
 from multiprocessing import freeze_support
 
+import jiwer
 from pydub import AudioSegment as asm
 from tqdm import tqdm
 
@@ -68,3 +69,31 @@ def run():
 if __name__ == '__main__':
     freeze_support()
     run()
+
+''' error rate analysis '''
+
+with open("E:/AutoSub/autosub/ground_truth.txt") as f:
+    ground_truth = f.readlines()
+
+with open("E:/AutoSub/autosub/output/0_2-07_What_It_Is_To_See.mp3_2022-11-19_19_52_45.txt") as f:
+    hypothesis = f.readlines()
+
+transformation = jiwer.Compose([
+    jiwer.ToLowerCase(),
+    jiwer.RemovePunctuation(),
+    jiwer.ExpandCommonEnglishContractions(),
+    jiwer.RemoveMultipleSpaces(),
+    jiwer.Strip(),
+    jiwer.RemoveWhiteSpace(replace_by_space=True),
+    jiwer.RemoveMultipleSpaces(),
+    jiwer.RemoveEmptyStrings(),
+    jiwer.ReduceToSingleSentence(),
+    jiwer.ReduceToListOfListOfWords(word_delimiter=" ")
+])  # (hypothesis)
+
+wer = jiwer.wer(ground_truth,
+                hypothesis,
+                truth_transform=transformation,
+                hypothesis_transform=transformation)
+
+print(wer)  # 14.5% word error rate using random sample of only 1 clip

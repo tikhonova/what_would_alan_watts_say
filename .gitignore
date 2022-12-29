@@ -1,2 +1,5 @@
 .idea
 .venv
+
+# material directory
+/dataset/
