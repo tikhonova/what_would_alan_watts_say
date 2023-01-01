@@ -1,5 +1,23 @@
-''' AssertionError: Torch not compiled with CUDA enabled
+''' AssertionError: Distributed mode requires CUDA
+___
+a MUST-read to confirm that both GPU and drivers support the CUDA version you've installed (or about to install):
+https://stackoverflow.com/questions/60987997/why-torch-cuda-is-available-returns-false-even-after-installing-pytorch-with
 
+Tacotron2 script was not seeing my cuda. I have a GPU RTX 2070 and CUDA toolkit 11.7.
+
+Checks:
+>> nvcc -V (to get detail re nvcc: NVIDIA (R) Cuda compiler driver)
+>> nvidia-smi (to obtain GPU info)
+>> conda list cudatoolkit (to see package info confirming installation)
+>> python -c "import torch; print(torch.cuda.is_available())" (it printed False for me, which means PyTorch was not compiled with CUDA support,
+                                                               so I had to reinstall it with the cuda flag following the steps from the next assertion error described below.)
+
+In the end, it 'Successfully installed torch-1.13.1+cu117'.
+Note that on Windows you must also specify 'gloo' backend in hparams.py as Windows doesn't support nccl distributed computing as of the time of writing.
+'''
+
+''' AssertionError: Torch not compiled with CUDA enabled
+___
 Could be several reasons, one of the first things to check is whether your GPU is compatible with CUDA you're installing.
 
 In my case, the error persisted, and what helped is
@@ -10,8 +28,27 @@ In my case, the error persisted, and what helped is
 as suggested in https://github.com/pytorch/pytorch/issues/30664
 '''
 
-''' AssertionError File "E:\tacotron2\layers.py", line 76, in mel_spectrogram assert(torch.min(y.data) >= -1)
+''' torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 66.00 MiB (GPU 0; 8.00 GiB total capacity; 7.23 GiB already allocated; 0 bytes free; 
+7.25 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  
+See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+___
+When you allocate a block of memory on the GPU, it is divided into smaller chunks, called "splits", which are managed separately by the GPU memory allocator.
+If the splits are too small, it can be difficult to find a contiguous block of memory that is large enough to satisfy the allocation request, which can lead to memory allocation failures. 
+On the other hand, if the splits are too large, it can lead to inefficient use of memory, as there may be gaps between splits that are too large to be used by smaller allocation requests.
 
+There are two things that can be adjusted:
+- the batch_size parameter in hparams.py determines the number of samples processed in each forward and backward pass through the model during training. 
+- the max_split_size_mb parameter prevents the allocator from splitting blocks larger than the specified size (in MB), i.e. determines the max size of each chunk of data to be processed by the model.
+
+Below is an additional argument that I've added to train.py, which I then passed in the terminal when calling train.py.
+What worked for me is 8000 MiB max_split_size_mb and a batch size of 2 (sigh).
+python E:/tacotron2/train.py --output_directory E:/tacotron2/checkpoints --log_directory E:/tacotron2/logdir --max-split-size-mb 8000 --warm_start
+'''
+parser.add_argument('--max-split-size-mb', default=256,
+                    type=int, help='Maximum size of tensors that can be split')
+
+''' AssertionError File "E:\tacotron2\layers.py", line 76, in mel_spectrogram assert(torch.min(y.data) >= -1)
+___
 This one is interesting.
 I went into layers.py and started uncovering layers of code, which led me to discover that
 Tacotron is using a seemingly arbitrary threshold for normalizing the waveform data, max_wav_value of 32768.0 in https://github.com/NVIDIA/tacotron2/blob/master/hparams.py,
@@ -29,7 +66,6 @@ However, it is possible to train the model on audio data with a different bit de
 
 What I'll do is just normalize the data to the range of a 16-bit signed integer, dividing by 2147483648 instead (i.e. updating hparams yet again).
 '''
-
 import numpy as np
 import pandas as pd
 import torch.utils.data
@@ -42,15 +78,12 @@ def load_filepaths_and_text(filename, split="|"):
     return filepaths_and_text
 
 
-audiopaths_and_text = load_filepaths_and_text('E:/AlanWatts/dataset/filelists/audio_text_train_filelist.txt')
-
 over1 = 0
 lessthanminus1 = 0
-
-# df = pd.DataFrame(columns=['audiopath', 'sampling_rate', 'audio', 'audio_norm'])
-
+audiopaths_and_text = load_filepaths_and_text('E:/AlanWatts/dataset/filelists/audio_text_train_filelist.txt')
 df = pd.DataFrame(
     columns=['audiopath', 'audio_bit_depth', 'min_audio', 'max_audio', 'min_audio_norm', 'max_audio_norm'])
+# df = pd.DataFrame(columns=['audiopath', 'sampling_rate', 'audio', 'audio_norm'])
 
 for audiopath, text in audiopaths_and_text:
     sampling_rate, data = read(audiopath)
@@ -88,11 +121,10 @@ for audiopath, text in audiopaths_and_text:
 df.to_csv(path_or_buf='E:/AlanWatts/dataset/data_out_of_bounds.csv', sep=',')
 
 ''' RuntimeError: shape '[1, 1, 960000]' is invalid for input of size 1920000 File "E:\tacotron2\stft.py", line 84, in transform input_data = input_data.view(num_batches, 1, num_samples)
-
+___
 This may be caused by WAV files having more than one channel.
 Solution: https://stackoverflow.com/questions/5120555/how-can-i-convert-a-wav-from-stereo-to-mono-in-python
 '''
-
 from pydub import AudioSegment
 import os
 
@@ -102,21 +134,3 @@ for file in os.listdir(filepath):
     sound = AudioSegment.from_wav(filepath + f'{file}')
     sound = sound.set_channels(1)
     sound.export(destpath + f'{file}', format="wav")
-
-''' torch.cuda.OutOfMemoryError: CUDA out of memory. 
-Tried setting the max_split_size_mb argument to a lower value. 
-
-Relevant info found:
-When you allocate a block of memory on the GPU, it is divided into smaller chunks, called "splits", which are managed separately by the GPU memory allocator.
-If the splits are too small, it can be difficult to find a contiguous block of memory that is large enough to satisfy the allocation request, which can lead to memory allocation failures. 
-On the other hand, if the splits are too large, it can lead to inefficient use of memory,
-as there may be gaps between splits that are too large to be used by smaller allocation requests.
-'''
-
-# Below didn't work for me but reducing the batch size in hparams did
-python - c
-"import torch; torch.cuda.empty_cache()"
-setx
-PYTORCH_CUDA_ALLOC_CONF
-"max_split_size_mb:128"
-# source: https://stackoverflow.com/questions/73747731/runtimeerror-cuda-out-of-memory-how-setting-max-split-size-mb

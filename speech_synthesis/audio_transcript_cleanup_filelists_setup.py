@@ -1,11 +1,73 @@
+''' Removing empty files, part of snippet borrowed from https://jaimeleal.github.io/how-to-speech-synthesis '''
 import os
 
+import scipy.io.wavfile as wavfile
+
+min_duration = 1
+path = 'E:/AlanWatts/dataset/split_audio/'
+zero_dur_files = []
+
+
+# removing emptio audio clips
+def duration(file_path):
+    (source_rate, source_sig) = wavfile.read(file_path)
+    duration_seconds = len(source_sig) / float(source_rate)
+    return duration_seconds
+
+
+# Remove files with length of less than 1 second
+for index, file in enumerate(os.listdir(path)):
+    if duration((os.path.join(path, file))) < min_duration:
+        zero_dur_files.append(file)
+        os.remove((os.path.join(path, file)))
+
+print(len(zero_dur_files))
+print(zero_dur_files)
+
+# removing empty text files
+import os
+
+path = 'E:/AlanWatts/dataset/transcripts/'
+min_length = 1
+blank_files = []
+
+for file in os.listdir(path):
+    filename = path + f'{file}'
+    contents = open(filename).readlines()
+    if len(contents) < min_length:
+        blank_files.append(file)
+        os.remove((os.path.join(path, file)))
+
+print(len(blank_files))
+print(blank_files)
+
+# leaving only those audios and transcripts that have a corresponding match
+audio_path = 'E:/AlanWatts/dataset/split_audio/'
+transcript_path = 'E:/AlanWatts/dataset/transcripts/'
+
+audio_files = [file[:-4] for file in os.listdir(audio_path)]
+transcripts = [file[:-4] for file in os.listdir(transcript_path)]
+
+counter = 0
+for file in transcripts:
+    if file not in audio_files:
+        print(file)
+        counter += 1
+        os.remove((os.path.join(transcript_path, f"{file}.txt")))
+
+counter = 0
+for file in audio_files:
+    if file not in transcripts:
+        print(file)
+        counter += 1
+        os.remove((os.path.join(audio_path, f"{file}.wav")))
+
+''' transcript text cleanup '''
+import os
 import jiwer
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
-''' transcript text cleanup '''
 
 filepath = 'E:/AlanWatts/dataset/transcripts/'
 
@@ -14,9 +76,9 @@ for file in os.listdir(filepath):
     if file_modified:
         break
     filename = filepath + f'{file}'
-    print(filename)
+    # print(filename)
     file_contents = open(filename, "r", encoding="utf-8").readlines()
-    print(file_contents)
+    # print(file_contents)
     transformed = jiwer.Compose([
         jiwer.ToLowerCase(),
         jiwer.RemovePunctuation(),
@@ -28,16 +90,14 @@ for file in os.listdir(filepath):
         jiwer.RemoveEmptyStrings(),
         jiwer.ReduceToSingleSentence()
     ])(file_contents)
-    print(transformed)
+    #   print(transformed)
     f = open(filename, "w", encoding="utf-8")
     f.write(''.join(transformed))
     f.close()
     file_modified = True
 
 ''' Make metadata.csv and filelists via https://jaimeleal.github.io/how-to-speech-synthesis '''
-
 filepath = 'E:/AlanWatts/dataset/transcripts/'
-
 files = os.listdir(filepath)
 rows = []
 # it = 0
@@ -48,7 +108,7 @@ for file in files:
     file_contents = open(filename, "r", encoding="utf-8").readlines()
     rows.append([file[:-4], ''.join(file_contents)])
 
-print(rows)
+# print(rows)
 
 df = pd.DataFrame(rows, columns=["name", "transcript"])
 
