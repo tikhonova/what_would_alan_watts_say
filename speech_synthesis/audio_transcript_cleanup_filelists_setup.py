@@ -36,7 +36,7 @@ for file in os.listdir(path):
     contents = open(filename).readlines()
     if len(contents) < min_length:
         blank_files.append(file)
-        os.remove((os.path.join(path, file)))
+        os.remove(filename)
 
 print(len(blank_files))
 print(blank_files)
@@ -65,9 +65,6 @@ for file in audio_files:
 ''' transcript text cleanup '''
 import os
 import jiwer
-import numpy as np
-import pandas as pd
-from sklearn.model_selection import train_test_split
 
 filepath = 'E:/AlanWatts/dataset/transcripts/'
 
@@ -97,6 +94,11 @@ for file in os.listdir(filepath):
     file_modified = True
 
 ''' Make metadata.csv and filelists via https://jaimeleal.github.io/how-to-speech-synthesis '''
+import os
+import pandas as pd
+from sklearn.model_selection import train_test_split
+import numpy as np
+
 filepath = 'E:/AlanWatts/dataset/transcripts/'
 files = os.listdir(filepath)
 rows = []

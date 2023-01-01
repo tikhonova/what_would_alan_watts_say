@@ -42,7 +42,7 @@ There are two things that can be adjusted:
 
 Below is an additional argument that I've added to train.py, which I then passed in the terminal when calling train.py.
 What worked for me is 8000 MiB max_split_size_mb and a batch size of 2 (sigh).
-python E:/tacotron2/train.py --output_directory E:/tacotron2/checkpoints --log_directory E:/tacotron2/logdir --max-split-size-mb 8000 --warm_start
+python -m multiproc E:/tacotron2/train.py --output_directory E:/tacotron2/checkpoints --log_directory E:/tacotron2/logdir --max-split-size-mb 8000 --warm_start
 '''
 parser.add_argument('--max-split-size-mb', default=256,
                     type=int, help='Maximum size of tensors that can be split')
