@@ -1,3 +1,9 @@
+''' ffmpeg not found when using pydub utils
+___
+If using Win, need to download from the official website and add to path, then reload git bash.
+https://github.com/jiaaro/pydub/issues/348
+'''
+
 ''' AssertionError: Distributed mode requires CUDA
 ___
 a MUST-read to confirm that both GPU and drivers support the CUDA version you've installed (or about to install):
@@ -12,9 +18,11 @@ Checks:
 >> python -c "import torch; print(torch.cuda.is_available())" (it printed False for me, which means PyTorch was not compiled with CUDA support,
                                                                so I had to reinstall it with the cuda flag following the steps from the next assertion error described below.)
 
-In the end, it 'Successfully installed torch-1.13.1+cu117'.
+In the end, it 'Successfully installed  +cu117'.
 Note that on Windows you must also specify 'gloo' backend in hparams.py as Windows doesn't support nccl distributed computing as of the time of writing.
 '''
+
+
 
 ''' AssertionError: Torch not compiled with CUDA enabled
 ___
@@ -64,7 +72,7 @@ Min/Max matrix: https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wa
 Tacotron 2 is typically trained on 16-bit audio data, which is a common bit depth for audio data and provides a good balance between precision and file size. 
 However, it is possible to train the model on audio data with a different bit depth, such as 32-bit audio, if the data is suitable for training and the model is able to process it.
 
-What I'll do is just normalize the data to the range of a 16-bit signed integer, dividing by 2147483648 instead (i.e. updating hparams yet again).
+What I'll do is just normalize the data to the range of a 16-bit signed integer, dividing by 2147483648 instead (i.e. updating hparams yet again). NB the division itself happens on line 43 of data_utils.py.
 '''
 import numpy as np
 import pandas as pd

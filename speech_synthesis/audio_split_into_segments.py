@@ -18,18 +18,20 @@ class SplitWavAudio:
         self.dest_path = dest_path
         self.filepath = os.path.join(file_path, file)
         self.audio = AudioSegment.from_wav(self.filepath)
+      #  self.resample = self.audio.resample(sample_rate_Hz=22050, channels=1)
 
     def get_duration(self):
         return self.audio.duration_seconds
 
     def single_split(self, from_min, to_min, split_filename):
-        t1 = from_min * 60 * 1000  # convert to milliseconds
-        t2 = to_min * 60 * 1000
+        t1 = from_min * 15 * 1000  # convert to milliseconds
+        t2 = to_min * 15 * 1000
         split_audio = self.audio[t1:t2]
-        split_audio.export(self.dest_path + '\\' + split_filename, format="wav")
+        resampled = split_audio.set_frame_rate(22050)  # change the sampling rate to 22050 Hz
+        resampled.export(self.dest_path + '\\' + split_filename, format="wav")
 
     def multiple_split(self, min_per_split):
-        total_mins = math.ceil(self.get_duration() / 60)
+        total_mins = math.ceil(self.get_duration() / 15)
         for i in range(0, total_mins, min_per_split):
             split_fn = str(i) + '_' + self.file
             self.single_split(i, i + min_per_split, split_fn)

@@ -1,13 +1,9 @@
-import multiprocessing
 import os
-import subprocess
-from multiprocessing import freeze_support
 
-import jiwer
 from pydub import AudioSegment as asm
 from tqdm import tqdm
 
-''' reduce the sample rate of audio file '''
+''' reduce the sample rate of audio file IF needed '''
 
 filepath = "E:/AlanWattsMaterialSorted/split_audio/"
 temp_path = 'E:/AutoSub/autosub/output/'
@@ -36,6 +32,14 @@ for file in old_files:
 
 ''' multiprocessing '''
 
+import multiprocessing
+import os
+import subprocess
+from multiprocessing import freeze_support
+
+filepath = "E:/AlanWatts/dataset/split_audio/"
+temp_path = 'E:/AutoSub/autosub/output/'
+
 # create a list of arguments to pass to the CLI script
 inputs = []
 files = [os.path.join(filepath, file) for file in os.listdir(filepath) if
@@ -56,13 +60,14 @@ def run_cli_script(*input_args):
 
 
 def run():
-    p = multiprocessing.Pool(16)  # of cores
-    num_batches = len(inputs) // 15  # number of batches to process based on the num of files (e.g. 15) to run at a time
+    p = multiprocessing.Pool(8)  # of cores
+    num_batches = len(inputs) // 7  # number of batches to process based on the num of files (e.g. 15) to run at a time
     for i in range(num_batches):
         # get the inputs for the current batch
-        batch_inputs = [(inputs[i * 15 + j]) for j in
-                        range(15)]  # compiling a batch of indices based on the num of files in a batch
+        batch_inputs = [(inputs[i * 7 + j]) for j in
+                        range(7)]  # compiling a batch of indices based on the num of files in a batch
         p.starmap(run_cli_script, batch_inputs)
+
 
 
 # use the ProcessPoolExecutor to run the CLI script in parallel
@@ -71,6 +76,7 @@ if __name__ == '__main__':
     run()
 
 ''' error rate analysis '''
+import jiwer
 
 with open("E:/AutoSub/autosub/ground_truth.txt") as f:
     ground_truth = f.readlines()

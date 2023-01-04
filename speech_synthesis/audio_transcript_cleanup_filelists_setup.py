@@ -1,6 +1,25 @@
+'''remove silent parts'''
+from pydub import AudioSegment
+from pydub.silence import detect_nonsilent
+
+
+def remove_sil(path_in, path_out, format="wav"):
+    sound = AudioSegment.from_file(path_in, format=format)
+    non_sil_times = detect_nonsilent(sound, min_silence_len=50, silence_thresh=sound.dBFS * 1.5)
+    if len(non_sil_times) > 0:
+        non_sil_times_concat = [non_sil_times[0]]
+        if len(non_sil_times) > 1:
+            for t in non_sil_times[1:]:
+                if t[0] - non_sil_times_concat[-1][-1] < 200:
+                    non_sil_times_concat[-1][-1] = t[1]
+                else:
+                    non_sil_times_concat.append(t)
+        non_sil_times = [t for t in non_sil_times_concat if t[1] - t[0] > 350]
+        sound[non_sil_times[0][0]: non_sil_times[-1][1]].export(path_out, format='wav')
+
+
 ''' Removing empty files, part of snippet borrowed from https://jaimeleal.github.io/how-to-speech-synthesis '''
 import os
-
 import scipy.io.wavfile as wavfile
 
 min_duration = 1
@@ -8,7 +27,7 @@ path = 'E:/AlanWatts/dataset/split_audio/'
 zero_dur_files = []
 
 
-# removing emptio audio clips
+# removing empty audio clips
 def duration(file_path):
     (source_rate, source_sig) = wavfile.read(file_path)
     duration_seconds = len(source_sig) / float(source_rate)
@@ -119,30 +138,37 @@ pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
 df["wav_path"] = df["name"].apply("E:/AlanWatts/dataset/split_audio/{}.wav".format)
-df["mel_path"] = df["name"].apply("E:/AlanWatts/dataset/mels/{}.pt".format)
 
 # Add new columns
 df["metadata"] = df["name"] + "|" + df[
     "transcript"]  # see Tacotron2 documentation reference `<audio file path>|<transcript>`  https://github.com/NVIDIA/DeepLearningExamples/tree/master/PyTorch/SpeechSynthesis/Tacotron2#getting-the-data
 df["wav_text"] = df["wav_path"] + "|" + df["transcript"]
-df["mel_text"] = df["mel_path"] + "|" + df["transcript"]
 
 # Split files intro training, testing, and validation
-train, test = train_test_split(df, test_size=0.2, random_state=1)
+train, test = train_test_split(df, test_size=0.1, random_state=1)
 test, val = train_test_split(test, test_size=0.05, random_state=1)
 
 metadata = df["metadata"]
 audio_text_test_filelist = test["wav_text"]
 audio_text_train_filelist = train["wav_text"]
 audio_text_val_filelist = val["wav_text"]
-mel_text_test_filelist = test["mel_text"]
-mel_text_train_filelist = train["mel_text"]
-mel_text_val_filelist = val["mel_text"]
 
-metadata.to_csv("dataset/metadata.csv", index=False)
-np.savetxt("dataset/filelists/audio_text_test_filelist.txt", audio_text_test_filelist.values, fmt="%s")
-np.savetxt("dataset/filelists/audio_text_train_filelist.txt", audio_text_train_filelist.values, fmt="%s")
-np.savetxt("dataset/filelists/audio_text_val_filelist.txt", audio_text_val_filelist.values, fmt="%s")
-np.savetxt("dataset/filelists/mel_text_test_filelist.txt", mel_text_test_filelist.values, fmt="%s")
-np.savetxt("dataset/filelists/mel_text_train_filelist.txt", mel_text_train_filelist.values, fmt="%s")
-np.savetxt("dataset/filelists/mel_text_val_filelist.txt", mel_text_val_filelist.values, fmt="%s")
+metadata.to_csv("E:/AlanWatts/dataset/metadata.csv", index=False)
+np.savetxt("E:/AlanWatts/dataset/filelists/audio_text_test_filelist.txt", audio_text_test_filelist.values, fmt="%s")
+np.savetxt("E:/AlanWatts/dataset/filelists/audio_text_train_filelist.txt", audio_text_train_filelist.values, fmt="%s")
+np.savetxt("E:/AlanWatts/dataset/filelists/audio_text_val_filelist.txt", audio_text_val_filelist.values, fmt="%s")
+
+''' Meta filelist for Waveglow '''
+import os
+import pandas as pd
+
+filepath = 'E:/AlanWatts/dataset/split_audio/'
+files = os.listdir(filepath)
+rows = []
+# it = 0
+for file in files:
+    filename = filepath + f'{file}'
+    rows.append(filename)
+
+df = pd.DataFrame(rows)
+df.to_csv("E:/AlanWatts/dataset/waveglow.txt", index=False, header=False, sep='\t', mode='a')
