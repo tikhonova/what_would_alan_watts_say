@@ -17,7 +17,7 @@ for i in tqdm(range(100)):
             # read the .wav file
             sound = asm.from_file(file_path, format='wav', frame_rate=22050)
             # set the frame rate to 16000
-            sound = sound.set_frame_rate(16000)
+            sound = sound.set_frame_rate(22050)
             # save the modified audio file
             sound.export(file_path,
                          format='wav')  # e.g. reducing size of 25 files from 175 MB to 71 MB might help resolve the occasional MemoryError
@@ -67,7 +67,6 @@ def run():
         batch_inputs = [(inputs[i * 7 + j]) for j in
                         range(7)]  # compiling a batch of indices based on the num of files in a batch
         p.starmap(run_cli_script, batch_inputs)
-
 
 
 # use the ProcessPoolExecutor to run the CLI script in parallel

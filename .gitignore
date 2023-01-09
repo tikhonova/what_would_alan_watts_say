@@ -3,5 +3,5 @@
 
 # material directory
 /dataset/
-/dataset_org/
+/dataset_test/
 /tacotron2_model_files/

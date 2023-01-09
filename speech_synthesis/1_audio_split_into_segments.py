@@ -18,7 +18,8 @@ class SplitWavAudio:
         self.dest_path = dest_path
         self.filepath = os.path.join(file_path, file)
         self.audio = AudioSegment.from_wav(self.filepath)
-      #  self.resample = self.audio.resample(sample_rate_Hz=22050, channels=1)
+
+    #  self.resample = self.audio.resample(sample_rate_Hz=22050, channels=1)
 
     def get_duration(self):
         return self.audio.duration_seconds
@@ -45,8 +46,8 @@ def split_audio_files(file_path: str, file: str, dest_path: str) -> None:
     split_wav.multiple_split(1)
 
 
-file_path = "E:/AlanWattsMaterialSorted/audio/"
-dest_path = "E:/AlanWattsMaterialSorted/split_audio/"
+file_path = "E:/AlanWatts/dataset/split_audio/"
+dest_path = "E:/AlanWatts/dataset/split_audio2/"
 
 # create a list of input arguments for the function
 inputs = [(file_path, file, dest_path) for file in os.listdir(file_path)]
