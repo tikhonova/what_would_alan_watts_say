@@ -1,38 +1,11 @@
 '''
-Remove empty files, part of snippet borrowed from https://jaimeleal.github.io/how-to-speech-synthesis
-'''
-
-import os
-
-import scipy.io.wavfile as wavfile
-
-path = 'E:/AlanWatts/dataset/split_audio3/'
-min_duration = 3
-zero_dur_files = []
-
-
-# removing empty audio clips
-def duration(file_path):
-    (source_rate, source_sig) = wavfile.read(file_path)
-    duration_seconds = len(source_sig) / float(source_rate)
-    return duration_seconds
-
-
-# Remove files with length of less than X seconds (set in min_duration)
-for index, file in enumerate(os.listdir(path)):
-    if duration((os.path.join(path, file))) < min_duration:
-        zero_dur_files.append(file)
-        os.remove((os.path.join(path, file)))
-
-print(len(zero_dur_files))
-print(zero_dur_files)
-
-'''
 Remove silent parts
 '''
-import os
+
 import multiprocessing
+import os
 from multiprocessing import freeze_support
+
 from pydub import AudioSegment
 from pydub.silence import detect_nonsilent
 

@@ -72,8 +72,12 @@ Min/Max matrix: https://docs.scipy.org/doc/scipy/reference/generated/scipy.io.wa
 Tacotron 2 is typically trained on 16-bit audio data, which is a common bit depth for audio data and provides a good balance between precision and file size. 
 However, it is possible to train the model on audio data with a different bit depth, such as 32-bit audio, if the data is suitable for training and the model is able to process it.
 
-What I'll do is just normalize the data to the range of a 16-bit signed integer, dividing by 2147483648 instead (i.e. updating hparams yet again). NB the division itself happens on line 43 of data_utils.py.
+What I can do is normalize the data to the range of a 16-bit signed integer, dividing by 2147483648 instead (i.e. updating hparams yet again). NB the division itself happens on line 43 of data_utils.py.
 '''
+
+# check for records that are out of bounds
+# data saved in df which is then written to csv
+
 import numpy as np
 import pandas as pd
 import torch.utils.data
@@ -90,7 +94,8 @@ over1 = 0
 lessthanminus1 = 0
 audiopaths_and_text = load_filepaths_and_text('E:/AlanWatts/dataset/filelists/audio_text_train_filelist.txt')
 df = pd.DataFrame(
-    columns=['audiopath', 'audio_bit_depth', 'min_audio', 'max_audio', 'min_audio_norm', 'max_audio_norm'])
+    columns=['audiopath', 'sampling_rate', 'audio_bit_depth', 'min_audio', 'max_audio', 'min_audio_norm',
+             'max_audio_norm'])
 # df = pd.DataFrame(columns=['audiopath', 'sampling_rate', 'audio', 'audio_norm'])
 
 for audiopath, text in audiopaths_and_text:
@@ -111,7 +116,8 @@ for audiopath, text in audiopaths_and_text:
     audio_min_norm = torch.round(torch.min(audio_norm.data))
     audio_max_norm = torch.round(torch.max(audio_norm.data))
     if audio_min_norm < -1 or audio_max_norm > 1:
-        df = df.append({'audiopath': audiopath, 'audio_bit_depth': audio_bit_depth, 'min_audio': audio_min.item(),
+        df = df.append({'audiopath': audiopath, 'sampling_rate': sampling_rate, 'audio_bit_depth': audio_bit_depth,
+                        'min_audio': audio_min.item(),
                         'max_audio': audio_max.item(), 'min_audio_norm': audio_min_norm.item(),
                         'max_audio_norm': audio_max_norm.item()},
                        ignore_index=True)
@@ -127,6 +133,19 @@ for audiopath, text in audiopaths_and_text:
     # audio_norm = torch.autograd.Variable(audio_norm, requires_grad=False)
 
 df.to_csv(path_or_buf='E:/AlanWatts/dataset/data_out_of_bounds.csv', sep=',')
+
+''' Poor alignment
+___
+This is a complex issue as it may have to do with a variety of factors.
+I was not getting any alignment (which you can see in the first tab of your Tensorboard) no matter how I finetuned hparams.
+What I ended up doing in my 3rd or 4th iteration was starting from scratch. 
+I ran my files through a noise reduction algorithm, which I should've done at the beginning. 
+I reduced the length of each audio clip to <15 seconds and cut silence blocks, transcribing thereafter. 
+Then I preprocessed text.
+Lastly, I changed hyper parameters, optimizing for lower attention (reducing the number of filters in the CNN, attention units and heads; see a copy of hparams in my repo, if curious).
+Shorter sentences lead to less padding, smaller model contributes to less computation and higher batch size, and therefore faster convergence.
+Some relevant info here and similar GitHub issues: https://github.com/Rayhane-mamah/Tacotron-2/issues/32
+'''
 
 ''' RuntimeError: shape '[1, 1, 960000]' is invalid for input of size 1920000 File "E:\tacotron2\stft.py", line 84, in transform input_data = input_data.view(num_batches, 1, num_samples)
 ___

@@ -63,3 +63,15 @@ for i, x, z in inputs:
     split_audio_files(i, x, z)
 '''With this implementation, the worker processes will execute the convert_audio_to_wav function
 with each set of arguments in the inputs list, and each worker process will convert one audio file at a time.'''
+
+# confirm sampling rate
+file_path = "E:/AlanWatts/dataset/split_audio/"
+import os
+import wave
+
+for file_name in os.listdir(file_path):
+    print(file_name)
+    with wave.open(os.path.join(file_path, file_name), "rb") as wave_file:
+        frame_rate = wave_file.getframerate()
+        print(frame_rate)
+        break

@@ -1,22 +1,51 @@
 '''
+Remove empty files, part of snippet borrowed from https://jaimeleal.github.io/how-to-speech-synthesis
+'''
+
+import os
+
+import scipy.io.wavfile as wavfile
+
+path = 'E:/AlanWatts/dataset/split_audio/'
+min_duration = 2
+zero_dur_files = []
+
+
+# removing empty audio clips
+def duration(file_path):
+    (source_rate, source_sig) = wavfile.read(file_path)
+    duration_seconds = len(source_sig) / float(source_rate)
+    return duration_seconds
+
+
+# Remove files with length of less than X seconds (set in min_duration)
+for index, file in enumerate(os.listdir(path)):
+    if duration((os.path.join(path, file))) < min_duration:
+        zero_dur_files.append(file)
+        os.remove((os.path.join(path, file)))
+
+print(len(zero_dur_files))
+print(zero_dur_files)
+
+'''
 Removing empty transcripts
 '''
 
 import os
 
 path = 'E:/AlanWatts/dataset/transcripts/'
-min_length = 1
-blank_files = []
+min_length = 14  # min chars
+files = []
 
 for file in os.listdir(path):
     filename = path + f'{file}'
-    contents = open(filename).readlines()
+    contents = open(filename).read()
     if len(contents) < min_length:
-        blank_files.append(file)
+        files.append(file)
         os.remove(filename)
 
-print(len(blank_files))
-print(blank_files)
+print(len(files))
+print(files)
 
 # leaving only those audios and transcripts that have a corresponding match
 audio_path = 'E:/AlanWatts/dataset/split_audio/'
