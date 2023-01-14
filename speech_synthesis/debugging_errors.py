@@ -49,7 +49,7 @@ There are two things that can be adjusted:
 - the max_split_size_mb parameter prevents the allocator from splitting blocks larger than the specified size (in MB), i.e. determines the max size of each chunk of data to be processed by the model.
 
 Below is an additional argument that I've added to train.py, which I then passed in the terminal when calling train.py.
-What worked for me is 8000 MiB max_split_size_mb and a batch size of 2 (sigh).
+What worked for me is 8000 MiB max_split_size_mb and a batch size of 2 (sigh). UPDATE: batch size of 16 after lowering learning / decoding steps.
 python -m multiproc E:/tacotron2/train.py --output_directory E:/tacotron2/checkpoints --log_directory E:/tacotron2/logdir --max-split-size-mb 8000 --warm_start
 '''
 parser.add_argument('--max-split-size-mb', default=256,
