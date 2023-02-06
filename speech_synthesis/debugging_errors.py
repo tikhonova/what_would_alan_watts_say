@@ -149,7 +149,7 @@ What eventually helped:
 - Reducing the duration even further, down to 4-5 seconds.
 - Warm starting from the Tacotron2 pretrained, publicly shared model.
 - I also cut the volume of my dataset by half, just to see if it might make a positive impact on how fast the model converges.
-- With 37.5 hrs of audio, audio clip 4-5 second duration, batch size of 16, and learning rate of 1e-4, I got the sweet diagonal after only 5000 steps (compare that to 170,000 steps of horizontal lines in some of my previous iterations).
+- With 37.5 hrs of audio, audio clip 4-5 second duration, batch size of 32, and learning rate of 1e-4, I got the sweet diagonal after only 5000 steps (compare that to 170,000 steps of horizontal lines in some of my previous iterations).
 - Note that this happened despite the error rate of my subtitles being higher than standard
 '''
 
@@ -161,8 +161,8 @@ Solution: https://stackoverflow.com/questions/5120555/how-can-i-convert-a-wav-fr
 from pydub import AudioSegment
 import os
 
-filepath = 'E:/AlanWatts/dataset/split_audio/'
-destpath = 'E:/AlanWatts/dataset/split_audio_upd/'
+filepath = 'E:/AlanWattsMaterialSorted/split_audio/'
+destpath = 'E:/AlanWattsMaterialSorted/split_audio2/'
 for file in os.listdir(filepath):
     sound = AudioSegment.from_wav(filepath + f'{file}')
     sound = sound.set_channels(1)

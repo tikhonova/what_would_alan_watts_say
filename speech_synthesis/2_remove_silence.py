@@ -9,8 +9,8 @@ from multiprocessing import freeze_support
 from pydub import AudioSegment
 from pydub.silence import detect_nonsilent
 
-file_path = "E:/AlanWatts/dataset/split_audio2/"
-dest_path = "E:/AlanWatts/dataset/split_audio3/"
+file_path = "E:/AlanWattsMaterialSorted/split_audio_noise_reduced/"
+dest_path = "E:/AlanWattsMaterialSorted/split_audio3/"
 
 
 def remove_sil(file_path: str, file: str, dest_path: str, format="wav"):

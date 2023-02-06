@@ -46,8 +46,8 @@ def split_audio_files(file_path: str, file: str, dest_path: str) -> None:
     split_wav.multiple_split(1)
 
 
-file_path = "E:/AlanWatts/dataset/split_audio/"
-dest_path = "E:/AlanWatts/dataset/split_audio2/"
+file_path = "E:/AlanWattsMaterialSorted/split_audio/"
+dest_path = "E:/AlanWattsMaterialSorted/split_audio2/"
 
 # create a list of input arguments for the function
 inputs = [(file_path, file, dest_path) for file in os.listdir(file_path)]
@@ -65,13 +65,13 @@ for i, x, z in inputs:
 with each set of arguments in the inputs list, and each worker process will convert one audio file at a time.'''
 
 # confirm sampling rate
-file_path = "E:/AlanWatts/dataset/split_audio/"
-import os
-import wave
-
-for file_name in os.listdir(file_path):
-    print(file_name)
-    with wave.open(os.path.join(file_path, file_name), "rb") as wave_file:
-        frame_rate = wave_file.getframerate()
-        print(frame_rate)
-        break
+# file_path = "E:/AlanWatts/dataset/split_audio/"
+# import os
+# import wave
+#
+# for file_name in os.listdir(file_path):
+#     print(file_name)
+#     with wave.open(os.path.join(file_path, file_name), "rb") as wave_file:
+#         frame_rate = wave_file.getframerate()
+#         print(frame_rate)
+#         break
