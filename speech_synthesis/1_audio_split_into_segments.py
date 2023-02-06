@@ -25,8 +25,8 @@ class SplitWavAudio:
         return self.audio.duration_seconds
 
     def single_split(self, from_min, to_min, split_filename):
-        t1 = from_min * 15 * 1000  # convert to milliseconds
-        t2 = to_min * 15 * 1000
+        t1 = from_min * 6 * 1000  # convert to milliseconds
+        t2 = to_min * 6 * 1000
         split_audio = self.audio[t1:t2]
         resampled = split_audio.set_frame_rate(22050)  # change the sampling rate to 22050 Hz
         resampled.export(self.dest_path + '\\' + split_filename, format="wav")

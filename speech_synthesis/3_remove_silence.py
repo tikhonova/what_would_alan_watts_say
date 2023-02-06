@@ -9,7 +9,7 @@ from multiprocessing import freeze_support
 from pydub import AudioSegment
 from pydub.silence import detect_nonsilent
 
-file_path = "E:/AlanWatts/dataset/split_audio3/"
+file_path = "E:/AlanWatts/dataset/split_audio2/"
 dest_path = "E:/AlanWatts/dataset/split_audio3/"
 
 

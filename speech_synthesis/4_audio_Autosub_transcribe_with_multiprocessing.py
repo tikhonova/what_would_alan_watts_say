@@ -80,7 +80,7 @@ import jiwer
 with open("E:/AutoSub/autosub/ground_truth.txt") as f:
     ground_truth = f.readlines()
 
-with open("E:/AutoSub/autosub/output/0_2-07_What_It_Is_To_See.mp3_2022-11-19_19_52_45.txt") as f:
+with open("E:/AlanWatts/dataset/transcripts/0_0_2-02_Being_Aware_Of_Awareness.mp3_2022-11-19_19_52_45.txt") as f:
     hypothesis = f.readlines()
 
 transformation = jiwer.Compose([
@@ -101,4 +101,5 @@ wer = jiwer.wer(ground_truth,
                 truth_transform=transformation,
                 hypothesis_transform=transformation)
 
-print(wer)  # 14.5% word error rate using random sample of only 1 clip
+print(wer)  # 28.5% word error rate using random sample of only 1 clip
+# For comparison, the default Amazon Transcribe transcript showed a Word Error Rate (WER) of 31.87%.

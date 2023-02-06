@@ -138,13 +138,19 @@ df.to_csv(path_or_buf='E:/AlanWatts/dataset/data_out_of_bounds.csv', sep=',')
 ___
 This is a complex issue as it may have to do with a variety of factors.
 I was not getting any alignment (which you can see in the first tab of your Tensorboard) no matter how I finetuned hparams.
-What I ended up doing in my 3rd or 4th iteration was starting from scratch. 
-I ran my files through a noise reduction algorithm, which I should've done at the beginning. 
-I reduced the length of each audio clip to <15 seconds and cut silence blocks, transcribing thereafter. 
-Then I preprocessed text.
-Lastly, I changed hyper parameters, optimizing for lower attention (reducing the number of filters in the CNN, attention units and heads; see a copy of hparams in my repo, if curious).
-Shorter sentences lead to less padding, smaller model contributes to less computation and higher batch size, and therefore faster convergence.
-Some relevant info here and similar GitHub issues: https://github.com/Rayhane-mamah/Tacotron-2/issues/32
+Initial approach:
+- I ran my files through a noise reduction algorithm. 
+- Reduced the length of each audio clip to <15 seconds and cut silence blocks, transcribing thereafter. 
+- Then I preprocessed text.
+- Lastly, I changed hyper parameters, optimizing for lower attention (reducing the number of filters in the CNN, attention units and heads; see a copy of hparams in my repo, if curious).
+- Shorter sentences lead to less padding, smaller model contributes to less computation and higher batch size, and therefore faster convergence.
+- Some relevant info here and similar GitHub issues: https://github.com/Rayhane-mamah/Tacotron-2/issues/32
+What eventually helped:
+- Reducing the duration even further, down to 4-5 seconds.
+- Warm starting from the Tacotron2 pretrained, publicly shared model.
+- I also cut the volume of my dataset by half, just to see if it might make a positive impact on how fast the model converges.
+- With 37.5 hrs of audio, audio clip 4-5 second duration, batch size of 16, and learning rate of 1e-4, I got the sweet diagonal after only 5000 steps (compare that to 170,000 steps of horizontal lines in some of my previous iterations).
+- Note that this happened despite the error rate of my subtitles being higher than standard
 '''
 
 ''' RuntimeError: shape '[1, 1, 960000]' is invalid for input of size 1920000 File "E:\tacotron2\stft.py", line 84, in transform input_data = input_data.view(num_batches, 1, num_samples)
