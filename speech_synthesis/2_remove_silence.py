@@ -24,11 +24,14 @@ def remove_sil(file_path: str, file: str, dest_path: str, format="wav"):
                     non_sil_times_concat[-1][-1] = t[1]
                 else:
                     non_sil_times_concat.append(t)
-        non_sil_times = [t for t in non_sil_times_concat if t[1] - t[0] > 350]
-        sound[non_sil_times[0][0]: non_sil_times[-1][1]].export(os.path.join(dest_path, file), format='wav')
+        try:
+            non_sil_times = [t for t in non_sil_times_concat if t[1] - t[0] > 350]
+            sound[non_sil_times[0][0]: non_sil_times[-1][1]].export(os.path.join(dest_path, file), format='wav')
+        except Exception():
+            pass
 
 
-inputs = [(file_path, file, dest_path) for file in os.listdir(file_path)]
+inputs = [(file_path, file, dest_path) for file in os.listdir(file_path) if file not in os.listdir(dest_path)]
 # print(inputs)
 #
 # for i, x, z in inputs:

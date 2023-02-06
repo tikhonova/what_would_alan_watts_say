@@ -40,7 +40,7 @@ def reduce_noise(file_path: str, file: str, dest_path: str) -> None:
         pass
 
 
-inputs = [(file_path, file, dest_path) for file in os.listdir(file_path) if file not in dest_path]
+inputs = [(file_path, file, dest_path) for file in os.listdir(file_path) if file not in os.listdir(dest_path)]
 # print(inputs)
 
 # for i, x, z in inputs:
