@@ -6,7 +6,7 @@ import os
 
 import scipy.io.wavfile as wavfile
 
-path = 'E:/AlanWatts/dataset/split_audio/'
+path = 'E:/AlanWattsMaterialSorted/split_audio4/'
 min_duration = 2
 zero_dur_files = []
 
