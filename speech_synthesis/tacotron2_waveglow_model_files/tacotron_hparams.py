@@ -1,3 +1,5 @@
+# comment definitions below are gathered from the internet, including but not limited to OpenAI ChatGpt
+
 import tensorflow as tf
 from text import symbols
 
@@ -9,13 +11,10 @@ class HParams(object):
         self.hparamdict = hparams
         for k, v in hparams.items():
             setattr(self, k, v)
-
     def __repr__(self):
         return "HParams(" + repr([(k, v) for k, v in self.hparamdict.items()]) + ")"
-
     def __str__(self):
         return ','.join([(k + '=' + str(v)) for k, v in self.hparamdict.items()])
-
     def parse(self, params):
         for s in params.split(","):
             k, v = s.split("=", 1)
@@ -35,7 +34,6 @@ class HParams(object):
             setattr(self, k, v)
         return self
 
-
 def create_hparams(hparams_string=None, verbose=False):
     """Create model hyperparameters. Parse nondefault from given string."""
 
@@ -43,7 +41,7 @@ def create_hparams(hparams_string=None, verbose=False):
         ################################
         # Experiment Parameters        #
         ################################
-        epochs=500,
+        epochs=1000,
         iters_per_checkpoint=3000,
         seed=1234,
         dynamic_loss_scaling=True,
@@ -93,10 +91,20 @@ def create_hparams(hparams_string=None, verbose=False):
         max_decoder_steps=1000,  # change to 10000 once trained for inference
         gate_threshold=0.5,
 
-        p_attention_dropout=0.06,
+        p_attention_dropout=0.1,
         # change to 0.08 once almost trained (and 0.06 when loss levels off); 0.4 if needed for the alignment to form  # attention mechanism is used to align the text with the audio by selectively focusing on parts of the text that are relevant to the current audio frame
-        p_decoder_dropout=0.06,
+        p_decoder_dropout=0.1,
         # change to 0.08 once almost trained (and 0.06 when loss levels off); # num of steps the model takes to generate the output audio; decoding process involves a series of steps, where the model generates a new audio frame at each step based on the previous frames and the input text
+
+        # Dropout is a commonly used technique in neural network models to prevent overfitting and improve generalization performance.
+        # Decoder is responsible for generating the mel-spectrogram from the encoded audio features and the attention weights.
+        # During training, the decoder dropout is applied to the output of the prenet layers and the output of the attention mechanism to regularize the model and reduce overfitting.
+        # The amount of dropout applied during training is controlled by a hyperparameter called the dropout rate.
+        # A dropout rate of 0.5 means that half of the units in the prenet and attention output are randomly dropped out during each training iteration.
+        # This means that the remaining units must learn to work together and provide meaningful representations, leading to better generalization performance.
+        # In general, a lower dropout rate (such as 0.1) may be more appropriate for larger datasets or more complex models, as these models are less likely to overfit and may benefit from less regularization.
+        # Conversely, a higher dropout rate (such as 0.5) may be more appropriate for smaller datasets or simpler models, as these models are more prone to overfitting and may benefit from more regularization.
+        # During inference, the dropout is turned off, and the model generates the mel-spectrogram without any regularization.
 
         # The relationship between attention and decoding steps is that the attention mechanism is used to align the text with the audio during the decoding process.
         # Attention helps the model to focus on the relevant parts of the input text and generate output audio that is aligned with the text.
@@ -124,7 +132,11 @@ def create_hparams(hparams_string=None, verbose=False):
         # Optimization Hyperparameters #
         ################################
         use_saved_learning_rate=False,
-        learning_rate=1e-8,
+        learning_rate=1e-3,
+        # When starting with a new dataset, it is usually a good idea to start with a higher learning rate (such as 1e-3) and then gradually reduce it if the training loss is not decreasing or if the validation loss starts to increase.
+        # This approach allows you to quickly explore a wide range of learning rates and find the optimal value.
+        # On the other hand, setting the learning rate too low (such as 1e-6) can make the training process very slow, as the model will take many epochs to converge.
+        # This can also lead to the problem of getting stuck in local optima, where the model is not able to find the global minimum of the loss function.
         weight_decay=1e-6,
         grad_clip_thresh=1.0,
         batch_size=32,
