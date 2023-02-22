@@ -167,3 +167,16 @@ for file in os.listdir(filepath):
     sound = AudioSegment.from_wav(filepath + f'{file}')
     sound = sound.set_channels(1)
     sound.export(destpath + f'{file}', format="wav")
+
+''' Model may occasionally throw an assertion error:   
+File "E:\tacotron2\waveglow\tacotron2\layers.py", line 75, in mel_spectrogram
+assert(torch.min(y.data) >= -1)
+AssertionError'''
+
+# there is an assertion check in Tacotron's layers.py that Waveglow references as well
+assert (torch.min(y.data) >= -1)
+assert (torch.max(y.data) <= 1)
+# they both check to see if the min/max value of tensor y is within the bounds of the audio signal that Tacotron 2 was trained on
+# thus ensuring that the input audio tensor does not contain values outside the expected range
+
+# see 1_remove_out_of_bound_files.py that removes files that fall out of bounds, while reducing noise for those that are within range
