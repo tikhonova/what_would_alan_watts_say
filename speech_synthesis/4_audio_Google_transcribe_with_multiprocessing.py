@@ -84,3 +84,35 @@ if __name__ == '__main__':
     freeze_support()
     p = multiprocessing.Pool(16)
     p.starmap(transcribe_audio, inputs)
+
+''' error rate analysis '''
+import jiwer
+
+with open("E:/AlanWatts/dataset/ground_truth.txt") as f:
+    ground_truth = f.readlines()
+
+with open("E:/AlanWatts/dataset/transcripts2/6_5_Zen_Mind_for_Beginners_I.mp3_2022-11-19_19_52_45.txt") as f:
+    hypothesis = f.readlines()
+
+transformation = jiwer.Compose([
+    jiwer.ToLowerCase(),
+    jiwer.RemovePunctuation(),
+    jiwer.ExpandCommonEnglishContractions(),
+    jiwer.RemoveMultipleSpaces(),
+    jiwer.Strip(),
+    jiwer.RemoveWhiteSpace(replace_by_space=True),
+    jiwer.RemoveMultipleSpaces(),
+    jiwer.RemoveEmptyStrings(),
+    jiwer.ReduceToSingleSentence(),
+    jiwer.ReduceToListOfListOfWords(word_delimiter=" ")
+])  # (hypothesis)
+
+wer = jiwer.wer(ground_truth,
+                hypothesis,
+                truth_transform=transformation,
+                hypothesis_transform=transformation)
+
+print(wer)
+# 0-20% word error rate based on just a couple clips.
+# for comparison, Autosub often returned completely incorrect or blank transcriptions
+# and the default Amazon Transcribe transcript showed a Word Error Rate (WER) of 31.87%.

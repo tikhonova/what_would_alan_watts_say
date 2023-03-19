@@ -6,7 +6,7 @@ import os
 
 import scipy.io.wavfile as wavfile
 
-path = 'E:/AlanWattsMaterialSorted/split_audio4/'
+path = 'E:/AlanWattsMaterialSorted/split_audio2/'
 min_duration = 2
 zero_dur_files = []
 
@@ -33,8 +33,8 @@ Removing empty transcripts
 
 import os
 
-path = 'E:/AlanWatts/dataset/transcripts/'
-min_length = 14  # min chars
+path = 'E:/AlanWatts/dataset/transcripts2/'
+min_length = 10  # min chars
 files = []
 
 for file in os.listdir(path):
@@ -48,8 +48,8 @@ print(len(files))
 print(files)
 
 # leaving only those audios and transcripts that have a corresponding match
-audio_path = 'E:/AlanWatts/dataset/split_audio/'
-transcript_path = 'E:/AlanWatts/dataset/transcripts/'
+audio_path = 'E:/AlanWatts/dataset/split_audio2/'
+transcript_path = 'E:/AlanWatts/dataset/transcripts2/'
 
 audio_files = [file[:-4] for file in os.listdir(audio_path)]
 transcripts = [file[:-4] for file in os.listdir(transcript_path)]
@@ -72,7 +72,7 @@ for file in audio_files:
 import os
 import jiwer
 
-filepath = 'E:/AlanWatts/dataset/transcripts/'
+filepath = 'E:/AlanWatts/dataset/transcripts2/'
 
 for file in os.listdir(filepath):
     file_modified = False
@@ -80,7 +80,7 @@ for file in os.listdir(filepath):
         break
     filename = filepath + f'{file}'
     # print(filename)
-    file_contents = open(filename, "r", encoding="utf-8").readlines()
+    file_contents = open(filename, "r", encoding="unicode_escape").readlines()
     # print(file_contents)
     transformed = jiwer.Compose([
         jiwer.ToLowerCase(),
@@ -105,7 +105,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 import numpy as np
 
-filepath = 'E:/AlanWatts/dataset/transcripts/'
+filepath = 'E:/AlanWatts/dataset/transcripts2/'
 files = os.listdir(filepath)
 rows = []
 # it = 0
@@ -124,7 +124,7 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
-df["wav_path"] = df["name"].apply("E:/AlanWatts/dataset/split_audio/{}.wav".format)
+df["wav_path"] = df["name"].apply("E:/AlanWatts/dataset/split_audio2/{}.wav".format)
 
 # Add new columns
 df["metadata"] = df["name"] + "|" + df[
@@ -149,7 +149,7 @@ np.savetxt("E:/AlanWatts/dataset/filelists/audio_text_val_filelist.txt", audio_t
 import os
 import pandas as pd
 
-filepath = 'E:/AlanWatts/dataset/split_audio/'
+filepath = 'E:/AlanWatts/dataset/split_audio2/'
 files = os.listdir(filepath)
 rows = []
 # it = 0
