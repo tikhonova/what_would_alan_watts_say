@@ -32,6 +32,7 @@ Alan Watts' lectures, essays, and books
 
 #### Helpful links
 - https://jalammar.github.io/illustrated-transformer/
+- https://huggingface.co/blog/how-to-generate
 - https://jaimeleal.github.io/how-to-speech-synthesis
 - https://towardsdatascience.com/nlp-working-with-books-fc82d8e9b0dc
 - https://docs.aitextgen.io/helpful-notes/
