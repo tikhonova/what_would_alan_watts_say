@@ -37,3 +37,6 @@ Alan Watts' lectures, essays, and books
 - https://towardsdatascience.com/nlp-working-with-books-fc82d8e9b0dc
 - https://docs.aitextgen.io/helpful-notes/
 - https://www.youtube.com/watch?v=uE0_XKh2d6g
+
+#### Blog overview
+Published on Medium under [Analytics Vidhya](https://ttikh.medium.com/what-would-alan-watts-say-if-he-were-here-with-us-today-1de4c14199ca)
